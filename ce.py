@@ -54,18 +54,18 @@ class ConnectEmit():
         del self._callables[id(ref)]
 
     def connect(self, f):
-        if type(f).__name__ not in ['function', 'instancemethod']:
+        if type(f).__name__ not in ['function', 'method']:
             raise TypeError("'%s' is not a function or instance method" %
                             type(f).__name__)
 
         # XXX weakref.WeakMethod on python3
-        if type(f).__name__ == 'instancemethod':
+        if type(f).__name__ == 'method':
             ref = weakref.ref(f.__func__)
             ref_self = weakref.ref(f.__self__, self._cleanup)
 
             # TODO
-            # self._callables[id(ref_self)] = _MethodCallable(ref, ref_self)
-            self._callables[id(ref)] = _MethodCallable(ref, ref_self)
+            self._callables[id(ref_self)] = _MethodCallable(ref, ref_self)
+            # self._callables[id(ref)] = _MethodCallable(ref, ref_self)
         else:
             ref = weakref.ref(f, self._cleanup)
             self._callables[id(ref)] = _FunctionCallable(ref)
